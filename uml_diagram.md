@@ -20,6 +20,7 @@ classDiagram
 
     class Task {
         +task_id: int
+        +pet_name: str
         +title: str
         +category: str
         +duration: int
@@ -35,7 +36,7 @@ classDiagram
         +tasks: List[Task]
         +daily_plan: List[Task]
         +sort_tasks_by_priority() List[Task]
-        +detect_conflicts() List[Task]
+        +detect_conflicts() List[Tuple[Task, Task]]
         +generate_daily_plan() List[Task]
         +explain_plan() str
     }
@@ -43,3 +44,4 @@ classDiagram
     Owner "1" --> "*" Pet : owns
     Pet "1" --> "*" Task : has
     Scheduler ..> Task : schedules
+    Owner ..> Scheduler : feeds tasks to

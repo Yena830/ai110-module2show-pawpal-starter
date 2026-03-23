@@ -1,15 +1,16 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
 @dataclass
 class Task:
     task_id: int
+    pet_name: str
     title: str
     category: str
     duration: int
     priority: int
-    preferred_time: Optional[str] = None
+    preferred_time: Optional[str] = None  # expected format: HH:MM
     completed: bool = False
 
     def mark_complete(self) -> None:
@@ -72,7 +73,7 @@ class Scheduler:
     def sort_tasks_by_priority(self) -> List[Task]:
         pass
 
-    def detect_conflicts(self) -> List[Task]:
+    def detect_conflicts(self) -> List[Tuple[Task, Task]]:
         pass
 
     def generate_daily_plan(self) -> List[Task]:

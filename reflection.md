@@ -1,17 +1,19 @@
 # PawPal+ Project Reflection
 
 ## 1. System Design
-
-**a. Initial design**
-
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
-
 From a system design perspective, I identified three core user actions:
 
 1. Enter and manage basic owner and pet information  
 2. Add and edit care tasks for a pet (including duration and priority)  
 3. Generate and review a daily care plan based on constraints and task priority  
+
+
+
+**a. Initial design**
+
+- Briefly describe your initial UML design.
+![alt text](image.png)
+- What classes did you include, and what responsibilities did you assign to each?
 
 Based on these actions, I designed four primary classes: `Owner`, `Pet`, `Task`, and `Scheduler`.
 
@@ -22,13 +24,23 @@ Based on these actions, I designed four primary classes: `Owner`, `Pet`, `Task`,
 
 This design follows separation of concerns: data is modeled in `Owner`, `Pet`, and `Task`, while all planning and algorithmic logic is centralized in `Scheduler`.
 
-![alt text](image.png)
+
 
 
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+Yes, my design changed after reviewing the initial class skeleton.
+
+One important change was adding a `pet_name` field to the `Task` class. In the original design, tasks could be collected from multiple pets into a single list, but they no longer clearly indicated which pet they belonged to. Adding `pet_name` makes the generated schedule easier to read and also helps the scheduler explain the daily plan more clearly.
+
+I also refined the responsibility of task editing. Instead of having both `Pet` and `Task` independently handle task updates, I decided that `Pet.edit_task()` should locate the correct task and delegate the actual modification to `Task.update_details()`. This keeps responsibilities more consistent and avoids duplicated update logic.
+
+Finally, I adjusted the design of conflict detection. I originally planned for `detect_conflicts()` to return a list of tasks, but this did not clearly represent which tasks were in conflict. I updated the design so that conflict detection returns task pairs instead, which better reflects the relationship between conflicting tasks.
+
+I also documented that `preferred_time` should follow a consistent `HH:MM` format to make future scheduling logic more reliable.
 
 ---
 
