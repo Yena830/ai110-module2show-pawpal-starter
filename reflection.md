@@ -36,11 +36,15 @@ Yes, my design changed after reviewing the initial class skeleton.
 
 One important change was adding a `pet_name` field to the `Task` class. In the original design, tasks could be collected from multiple pets into a single list, but they no longer clearly indicated which pet they belonged to. Adding `pet_name` makes the generated schedule easier to read and also helps the scheduler explain the daily plan more clearly.
 
-I also refined the responsibility of task editing. Instead of having both `Pet` and `Task` independently handle task updates, I decided that `Pet.edit_task()` should locate the correct task and delegate the actual modification to `Task.update_details()`. This keeps responsibilities more consistent and avoids duplicated update logic.
+I also introduced a `pet_id` field in the `Pet` class and updated `Owner.remove_pet()` to use this identifier instead of the pet name. This change avoids ambiguity when multiple pets share the same name and makes the system more robust and closer to real-world design practices.
 
-Finally, I adjusted the design of conflict detection. I originally planned for `detect_conflicts()` to return a list of tasks, but this did not clearly represent which tasks were in conflict. I updated the design so that conflict detection returns task pairs instead, which better reflects the relationship between conflicting tasks.
+I refined the responsibility of task editing as well. Instead of having both `Pet` and `Task` independently handle updates, I made `Pet.edit_task()` responsible for locating the correct task and delegating the actual modification to `Task.update_details()`. This reduces duplicated logic and keeps responsibilities clearly separated.
 
-I also documented that `preferred_time` should follow a consistent `HH:MM` format to make future scheduling logic more reliable.
+Another change was improving how the `Scheduler` retrieves data. Initially, it operated only on a list of tasks passed directly to it. I updated the design so that the `Scheduler` can also be initialized with an `Owner`, allowing it to retrieve tasks through `Owner.get_all_tasks()`. This makes the interaction between components more natural and better reflects the system structure.
+
+I also adjusted the design of conflict detection. I originally planned for `detect_conflicts()` to return a list of tasks, but this did not clearly represent which tasks were in conflict. I updated it to return pairs of conflicting tasks instead, which better captures the relationship between them.
+
+Finally, I refined the scheduling logic. The initial version separated timed and untimed tasks, which could lead to lower-priority tasks appearing earlier. I updated `generate_daily_plan()` to sort tasks by priority first and use `preferred_time` only as a tiebreaker. This ensures that higher-priority tasks are always scheduled first while still respecting time preferences when possible. I also documented that `preferred_time` should follow a consistent `HH:MM` format to make scheduling logic more reliable.
 
 ---
 
