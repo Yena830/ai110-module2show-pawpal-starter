@@ -60,6 +60,14 @@ Finally, I refined the scheduling logic. The initial version separated timed and
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+One key tradeoff in the scheduler is using an **O(n²) pair-comparison algorithm** for conflict detection instead of a more efficient data structure like a sorted interval tree.
+
+The current `detect_conflicts()` method compares every unique pair of pending timed tasks using `itertools.combinations(timed, 2)`. For each pair, it converts the `preferred_time` strings to integer minutes and checks whether the two `[start, start+duration)` intervals overlap using the formula `a_start < b_end and b_start < a_end`. This correctly catches both exact same-start conflicts and partial overlaps caused by task duration — a refinement over the original version that only compared time strings.
+
+The tradeoff is performance vs simplicity. An interval tree or a sweep-line algorithm could detect all conflicts in O(n log n) time, which scales better for large task lists. However, for a pet scheduling app where a typical owner manages 5–20 tasks per day, the O(n²) approach is fast enough that the difference is undetectable. The pair-comparison code is also straightforward to read and verify by hand, which matters more in a small app than raw algorithmic efficiency.
+
+A second related tradeoff: the scheduler only flags conflicts as **warnings** (returning plain strings via `warn_conflicts()`) rather than automatically resolving them by shifting tasks. Auto-resolution would require choosing which task to delay and by how much — a decision that depends on the owner's preferences. Returning warnings keeps the owner in control and avoids making silent assumptions about priority.
+
 ---
 
 ## 3. AI Collaboration

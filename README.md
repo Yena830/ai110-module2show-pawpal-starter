@@ -22,6 +22,24 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Smarter Scheduling
+
+Phase 3 of this project extended the `Scheduler` class with four algorithmic improvements:
+
+**Chronological sorting** — `sort_by_time()` converts each task's `preferred_time` string (`"HH:MM"`) to total minutes since midnight and sorts ascending. Tasks with no preferred time are treated as end-of-day (`23:59`) so they always appear last.
+
+**Flexible filtering** — `filter_tasks(pet_name, completed, category)` accepts any combination of optional filters and applies them in sequence using list comprehensions. Passing no arguments returns all tasks; passing multiple arguments narrows the result to tasks matching every filter (case-insensitive).
+
+**Recurring tasks** — `Task` now carries `recurrence` (`"daily"` or `"weekly"`) and `due_date` fields. Calling `Scheduler.complete_and_reschedule(task_id)` marks the current occurrence done and automatically creates the next one using Python's `timedelta`:
+- daily → `due_date + timedelta(days=1)`
+- weekly → `due_date + timedelta(weeks=1)`
+
+The new task is registered with both the scheduler's flat list and the pet's own task list so everything stays in sync.
+
+**Duration-aware conflict detection** — `detect_conflicts()` now checks whether task time *windows* overlap rather than comparing start-time strings. Two tasks conflict when `start_a < end_b and start_b < end_a`, catching partial overlaps (e.g. an 08:00+30 min task and an 08:15+10 min task) that the original exact-match check would miss. `warn_conflicts()` wraps this in plain English warning strings so the caller never needs to handle exceptions.
+
+---
+
 ## Getting started
 
 ### Setup
