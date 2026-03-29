@@ -40,6 +40,43 @@ The new task is registered with both the scheduler's flat list and the pet's own
 
 ---
 
+## Testing PawPal+
+
+### Run the tests
+
+```bash
+# activate your virtual environment first
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python -m pytest tests/test_pawpal.py -v
+```
+
+### What the tests cover
+
+The suite contains **21 tests** organized across five areas:
+
+| Area | Tests | What is verified |
+|---|---|---|
+| **Sorting** | 2 | Tasks added out of order sort to `07:45 → 08:00 → 14:00 → 18:00`; tasks with no time sort last |
+| **Filtering** | 5 | Filter by pet name, completion status, combined filters; nonexistent pet returns `[]` without crashing |
+| **Conflict detection** | 5 | Exact same-start times flagged; duration-overlap caught (e.g. 07:45+30 min vs 08:00); completed tasks ignored; no false positives on non-overlapping windows |
+| **Recurring tasks** | 5 | Daily → `due_date + 1 day`; weekly → `due_date + 7 days`; non-recurring returns `None`; invalid ID raises `ValueError`; rescheduled task inherits all original fields |
+| **Schedule generation** | 2 | Priority 5 task at 18:00 ranks above priority 2 task at 08:00; empty task list returns `[]` without crashing |
+
+The two original Phase 2 tests (`test_task_completion`, `test_add_task_to_pet`) are preserved and still pass.
+
+### Confidence level
+
+**★★★★☆ (4/5)**
+
+All 21 tests pass and cover the core happy paths and the most likely edge cases (empty inputs, non-existent pets, completed-task exclusion, duration-overlap detection). One star is withheld because the suite does not yet cover:
+
+- The Streamlit UI layer (`app.py`) — UI interactions are untested
+- Persistence / data loading — tasks exist only in memory during a session
+- The `recurrence="monthly"` case and other unknown recurrence strings (currently silently return `None`)
+- Multi-day scheduling across a date range rather than a single daily plan
+
+---
+
 ## Getting started
 
 ### Setup
